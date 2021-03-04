@@ -1,6 +1,7 @@
 import csv
 import time
 import sys
+import multiprocessing
 
 from elasticsearch import Elasticsearch, helpers
 from tqdm import tqdm

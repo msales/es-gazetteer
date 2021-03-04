@@ -22,27 +22,27 @@ cd es-gazetteer
 ```
 STEP 2) Install required libraries
 ```
-python install -r requirements.txt
+pip install -r requirements.txt
 ```
 STEP 3) Create directory for index data of elasticsearch to be placed
 ```
 mkdir gdata
-sudo chmod 777
+sudo chmod 777 gdata
 ```
 STEP 4) Initialise docker container
 ```
-docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name es-gazetteer --net elasticsearch --hostname 172.19.0.2 -v /data-mitras/gdata/:/usr/share/elasticsearch/data elasticsearch:7.6.1
+docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name es-gazetteer --net elasticsearch --hostname 172.19.0.2 -v /Users/hugon/Dev/es-gazetteer/gdata:/usr/share/elasticsearch/data elasticsearch:7.10.1
 ```
 STEP 5) Download and extract country data from Geonames
 ```
 wget http://download.geonames.org/export/dump/allCountries.zip
 unzip allCountries.zip
 ```
-STEP 6) Create index for Geonames data in elasticsearch
+STEP 6) Wait until container is up and create index for Geonames data in elasticsearch
 ```
 curl -XPUT 'localhost:9200/geonames' -H 'Content-Type: application/json' -d @geonames_mapping.json
 ```
-STEP 7) Import Geonames data from allCountries.txt
+STEP 7) Import Geonames data from allCountries.txt - only data with feature class A and P will be imported!
 ```
 python es-importer.py
 ```

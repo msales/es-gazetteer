@@ -1,12 +1,17 @@
 import csv
 import time
-import multiprocessing
+import sys
 
 from elasticsearch import Elasticsearch, helpers
 from tqdm import tqdm
 from datetime import datetime
 
-es = Elasticsearch(urls='http://localhost:9200/', timeout=60, max_retries=2)
+url = 'http://localhost:9200/'
+if len(sys.argv) - 1 > 0:
+    url = sys.argv[1]
+
+print("Using URL: ", url)
+es = Elasticsearch(urls=url, timeout=60, max_retries=2)
 number_of_threads = multiprocessing.cpu_count()
 
 
@@ -90,7 +95,7 @@ def documents(reader, es):
     skippedCount = 0
     for row in tqdm(reader, total=11741135):  # approx
         feature_class = row[6]
-        # leave feature classes corresponding to regions and cities
+        # insert only rows that has feature class A or P
         if feature_class != 'A' and feature_class != 'P':
             skippedCount += 1
             continue

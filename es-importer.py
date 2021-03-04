@@ -86,7 +86,14 @@ def iso_convert(iso2c):
 def documents(reader, es):
     todays_date = datetime.today().strftime("%Y-%m-%d")
     count = 0
+    insertedCount = 0
+    skippedCount = 0
     for row in tqdm(reader, total=11741135):  # approx
+        feature_class = row[6]
+        # leave feature classes corresponding to regions and cities
+        if feature_class != 'A' and feature_class != 'P':
+            skippedCount += 1
+            continue
         try:
             coords = row[4] + "," + row[5]
             country_code3 = iso_convert(row[8])
@@ -95,7 +102,7 @@ def documents(reader, es):
                    "asciiname": row[2],
                    "alternativenames": row[3].split(","),
                    "coordinates": coords,  # 4, 5
-                   "feature_class": row[6],
+                   "feature_class": feature_class, # 6
                    "feature_code": row[7],
                    "country_code2": row[8],
                    "country_code3": country_code3,
@@ -115,9 +122,12 @@ def documents(reader, es):
                       "_id": doc['geonameid'],
                       "_source": doc}
             yield action
+            insertedCount += 1
         except ():
             count += 1
     print('Exception count:', count)
+    print('Skipped not feature class A or P count:', skippedCount)
+    print('Inserted count:', insertedCount)
 
 
 if __name__ == "__main__":
